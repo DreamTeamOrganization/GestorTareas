@@ -5,38 +5,58 @@
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.app-container {
+  background: #f9fafb;
+  padding: 4rem;
+  border-radius: 20px;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.login-form h2 {
+  margin-bottom: 1.5rem;
+  color: #ffb3c1;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.form-group {
+  
+  margin-bottom: 1rem;
+  text-align: left;
 }
 
-.card {
-  padding: 2em;
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #333;
 }
 
-.read-the-docs {
-  color: #888;
+.form-group input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+button {
+  background-color: #2ca4ff;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px !important;
+  font-size: 1rem;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+button:hover {
+  background: #186bab;
+}
+
+.error {
+  color: #ff3333;
+  margin-bottom: 1rem;
 }
