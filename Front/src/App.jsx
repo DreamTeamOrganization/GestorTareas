@@ -21,15 +21,80 @@ function App() {
 
     if (isLoginView) {
       if (!user || !password) {
-        setError("Por favor ingrese usuario y contraseña");
+        setError("Por favor ingresa usuario y contraseña");
         return;
       }
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+      
+        if (isLoginView) {
+          if (!user || !password) {
+            setError("Por favor ingresa usuario y contraseña");
+            return;
+          }
+      
+          // PETICIÓN POST para login
+          try {
+            const response = await fetch("http://localhost:8080/api/usuarios/login", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({ username: user, password: password })
+            });
+      
+            if (!response.ok) throw new Error("Error en la autenticación");
+            const data = await response.json();
+            console.log("Login exitoso:", data);
+            setError("");
+            alert(`Login exitoso para: ${user}`);
+          } catch (err) {
+            console.error(err);
+            setError("Login fallido. Verifica tus credenciales.");
+          }
+      
+        } else {
+          if (!user || !password || !confirmPassword) {
+            setError("Por favor completa todos los campos");
+            return;
+          }
+          if (password !== confirmPassword) {
+            setError("Las contraseñas no coinciden");
+            return;
+          }
+      
+          // PETICIÓN POST para registro
+
+          const credentials = btoa("superduperuser:user");
+          try {
+            const response = await fetch("http://localhost:8080/api/usuarios/add", {
+              method: "POST",
+              headers: {
+                "Authorization": `Basic ${credentials}`,
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({ username: user, password: password })
+            });
+      
+            if (!response.ok) throw new Error("Error en el registro");
+            const data = await response.json();
+            console.log("Registro exitoso:", data);
+            setError("");
+            alert(`Registro exitoso para: ${user}`);
+          } catch (err) {
+            console.error(err);
+            setError("Registro fallido. Intenta de nuevo.");
+          }
+        }
+      };
+      
       // Lógica de registro
       setError("");
       alert(`Login attempt with user: ${user}`);
     } else {
       if (!user || !password || !confirmPassword) {
-        setError("Por favor complete todos los campos");
+        setError("Por favor completa todos los campos");
         return;
       }
       if (password !== confirmPassword) {
@@ -46,7 +111,7 @@ function App() {
     <div className="app-container">
       <h1>{message}</h1>
       <div className="auth-form">
-        <h2>{isLoginView ? 'Iniciar Sesión' : 'Registrarse'}</h2>
+        <h2>{isLoginView ? 'Inicia Sesión' : 'Registrate'}</h2>
         {error && <p className="error">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -55,7 +120,7 @@ function App() {
               type="text"
               value={user}
               onChange={(e) => setUser(e.target.value)}
-              placeholder="Ingrese su usuario"
+              placeholder="Ingresa usuario"
             />
           </div>
 
@@ -65,22 +130,24 @@ function App() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Ingrese su contraseña"
+              placeholder="Ingresa contraseña"
             />
           </div>
           {!isLoginView && (
             <div className="form-group">
-              <label>Confirmar Contraseña</label>
+              <label>Confirma tu contraseña</label>
               <input
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirme su contraseña"
+                placeholder="Confirma tu contraseña"
               />
             </div>
           )}
-          <button type="submit" className="submit-btn">
-            {isLoginView ? 'Ingresar' : 'Registrarse'}
+          <button type="submit" className="submit-btn" onClick={(e) => {
+            console.log(user);
+          }}>
+            {isLoginView ? 'Ingresa' : 'Registrate'}
           </button>
         </form>
         <a
