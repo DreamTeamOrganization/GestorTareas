@@ -1,12 +1,34 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import glasses from '../assets/glasses.svg';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Home = () => {
-  const projects = [
+  /* const projects = [
     { id: 1, name: 'Proyecto 1', initials: 'P1' },
     { id: 2, name: 'Proyecto 2', initials: 'P2' },
-  ];
+  ];*/
+  const [projects, setProjects] = useState([]);
+
+  useEffect(() => {
+    // Fetch projects when the component mounts
+    const credentials = btoa("superduperuser:user");
+
+    //almacenar la respuesta de id que envia desde el ingreso y esa se conecta con el idUser
+    const fetchProjects = async () => {
+      const response = await fetch("http://localhost:8080/api/projects/user/34", {
+        method: "GET",
+        headers: {
+          "Authorization": `Basic ${credentials}`,
+          "Content-Type": "application/json"
+        }
+      })
+      const result = await response.json();
+      setProjects(result);
+    };
+
+    fetchProjects();
+  }, []);
+
 
   const handleProjectClick = (project) => {
     alert(`Project selected: ${project.name}`);

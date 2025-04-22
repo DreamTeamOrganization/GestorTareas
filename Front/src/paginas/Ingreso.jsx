@@ -28,7 +28,9 @@ function Ingreso() {
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({ username: user, password: password })
-                });
+                  });
+                  const result = await response.json();
+                  console.log(result);
                 
                 if (!response.ok) throw new Error("Error en la autenticación");
                 setError("");
