@@ -29,11 +29,14 @@ function Ingreso() {
                     },
                     body: JSON.stringify({ username: user, password: password })
                   });
-                  const result = await response.json();
+                  //const result = await response.json();
+                  const result = await response.text();//lo agregue ahorita(el backend lo envia como texto)
                   console.log(result);
                 
                 if (!response.ok) throw new Error("Error en la autenticación");
                 setError("");
+                localStorage.setItem("userId", result);//lo agregue ahorita (se guarda el id en localStorage)
+                localStorage.setItem("username", user);//lo agregue ahorita (se guarda el id en localStorage)
                 alert(`Inicio de sesión exitoso para: ${user}`);
                 navigate("/home");
             } catch (err) {
