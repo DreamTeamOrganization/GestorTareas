@@ -48,7 +48,7 @@ public class ProjectController {
         }
     }
 
-    @GetMapping("/add")
+    @PostMapping("/add")
     public ResponseEntity<?> saveNewProjec(@RequestBody ProjectAndUserDto projectAndUserDto){
         //validar que exista un usuario
         if (usersRepository.findById(projectAndUserDto.getIdUser()).isPresent()){

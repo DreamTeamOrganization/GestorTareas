@@ -14,6 +14,9 @@ const Home = () => {
   const [newDescription, setNewDescription] = useState('');
   const credentials = btoa("superduperuser:user");
   
+  const storeUserId = localStorage.getItem("userId");
+  const storeUsername = localStorage.getItem("username");
+
   const fetchProjects = async () => {
     const response = await fetch(`http://localhost:8080/api/projects/user/${storeUserId}`, {
       method: "GET",
@@ -27,9 +30,9 @@ const Home = () => {
   };
   
   useEffect(() => {
-    const storeUserId = localStorage.getItem("userId");
-    const storeUsername = localStorage.getItem("username");
     
+    fetchProjects(); //refrescar la lista
+
     if (storeUserId) {
       setUserId(storeUserId);
     }
@@ -37,8 +40,6 @@ const Home = () => {
     if (storeUsername) {
       setUsername(storeUsername);
     }
-    
-    fetchProjects();
     
   }, [userId]);
   
@@ -49,12 +50,12 @@ const Home = () => {
   const handleCreateProject = async () => {
     const credentials = btoa("superduperuser:user");
     const response = await fetch(`http://localhost:8080/api/projects/add`, {
-      method: "GET",
+      method: "POST",
       headers: {
         "Authorization": `Basic ${credentials}`,
         "Content-Type": "application/json"
       },
-      //body: JSON.stringify({ name: newProjectName, description: newDescription, id_user: userId })
+      body: JSON.stringify({ name: newProjectName, description: newDescription, idUser: userId })
     });
     if (!response.ok) throw new Error("Error al crear el proyecto");
 
@@ -62,8 +63,8 @@ const Home = () => {
     setShowCreateModal(false);
     setNewProjectName("");
     setNewDescription("");
-    fetchProjects(); //refrescar la lista
 
+    fetchProjects(); //refrescar la lista
   };
   
   const handleOpenCreateModal = () => setShowCreateModal(true);
