@@ -2,6 +2,8 @@ package DreamTeam.GestorTareas.controllers;
 
 import DreamTeam.GestorTareas.dtos.ProjectAndUserDto;
 import DreamTeam.GestorTareas.dtos.ProjectNameDto;
+import DreamTeam.GestorTareas.dtos.ProjectWithUsersDto;
+import DreamTeam.GestorTareas.dtos.UserSimpleDto;
 import DreamTeam.GestorTareas.entities.ProjectEntity;
 import DreamTeam.GestorTareas.entities.UserByProjectEntity;
 import DreamTeam.GestorTareas.entities.UserEntity;
@@ -30,6 +32,7 @@ public class ProjectController {
     @Autowired
     private ProjectRepository projectRepository;
 
+    //Obtener projectos de un usuario
     @GetMapping("/user/{idUser}")
     public ResponseEntity<?> getProjectsByUser(@PathVariable Long idUser){
         //validar que exista un usuario
@@ -48,6 +51,7 @@ public class ProjectController {
         }
     }
 
+    //Agregar pprojecto mas relacion con usuario
     @PostMapping("/add")
     public ResponseEntity<?> saveNewProjec(@RequestBody ProjectAndUserDto projectAndUserDto){
         //validar que exista un usuario
@@ -71,4 +75,81 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
         }
     }
+
+    //Obtener projecto por id
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getProject(@PathVariable Long id){
+        //Buscar el proyecto
+        Optional<ProjectEntity> projectOpt = projectRepository.findById(id);
+        if (projectOpt.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Proyecto no encontrado");
+        } else {
+            return ResponseEntity.ok(projectOpt);
+        }
+    }
+
+    //Actualizar projecto por id
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateProject(@PathVariable Long id, @RequestBody ProjectEntity updatedProject){
+        //Buscar el proyecto
+        Optional<ProjectEntity> projectOpt = projectRepository.findById(id);
+        if (projectOpt.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Proyecto no encontrado");
+        }
+
+        ProjectEntity project = projectOpt.get();
+        project.setName(updatedProject.getName() != null
+                ? updatedProject.getName()
+                : project.getName()
+        );
+        project.setDescription(updatedProject.getDescription() != null
+                ? updatedProject.getDescription()
+                : project.getDescription()
+        );
+
+        projectRepository.save(project);
+        return ResponseEntity.ok(project);
+    }
+
+    //Borrar un proyecto mas relacion con usuarios
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteProject(@PathVariable Long id){
+        //Buscar el proyecto
+        Optional<ProjectEntity> projectOpt = projectRepository.findById(id);
+        if (projectOpt.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Proyecto no encontrado");
+        }
+
+        //Borrar relacion con usuarios
+        List<UserByProjectEntity> relations = userByProjectRepository.findByProjectId(id);
+        userByProjectRepository.deleteAll(relations);
+
+        //Borrar proyecto
+        projectRepository.deleteById(id);
+
+        return ResponseEntity.ok("Borrado exitoso");
+    }
+
+    //Obtener projecto mas info de usuarios
+    @GetMapping("/{id}/with-users")
+    public ResponseEntity<?> getProjectWithUsers(@PathVariable Long id){
+        Optional<ProjectEntity> projectOpt = projectRepository.findById(id);
+        if (projectOpt.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Proyecto no encontrado");
+        }
+
+        ProjectEntity project = projectOpt.get();
+
+        List<UserSimpleDto> users = userByProjectRepository.findUsersByProjectId(id);
+
+        ProjectWithUsersDto projectWithUsers = new ProjectWithUsersDto(
+                project.getId(),
+                project.getName(),
+                project.getDescription(),
+                users
+        );
+
+        return ResponseEntity.ok(projectWithUsers);
+    }
+
 }

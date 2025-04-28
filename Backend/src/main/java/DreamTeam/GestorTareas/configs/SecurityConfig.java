@@ -1,5 +1,7 @@
 package DreamTeam.GestorTareas.configs;
 
+import DreamTeam.GestorTareas.services.JwtAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -18,6 +20,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
@@ -42,11 +48,12 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions( frame -> frame.disable())) // deshabilita CSRF para peticiones sin sesión (como APIs)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/h2-console/**").permitAll() // Desprotege rutas h2
+                        .requestMatchers("api/users/login").permitAll() //Login publico
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // permite preflight
                         .requestMatchers("/api/**").authenticated() // permite tus endpoints públicos
                         .anyRequest().authenticated() // protege el resto
                 )
-                .httpBasic(Customizer.withDefaults()); // si estás usando basic auth
+                .addFilterBefore(jwtAuthenticationFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
