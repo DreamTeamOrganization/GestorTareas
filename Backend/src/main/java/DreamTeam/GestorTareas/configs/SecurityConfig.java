@@ -49,6 +49,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/h2-console/**").permitAll() // Desprotege rutas h2
                         .requestMatchers("api/users/login").permitAll() //Login publico
+                        .requestMatchers("api/users/add").permitAll() //Sign up publico
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // permite preflight
                         .requestMatchers("/api/**").authenticated() // permite tus endpoints públicos
                         .anyRequest().authenticated() // protege el resto
