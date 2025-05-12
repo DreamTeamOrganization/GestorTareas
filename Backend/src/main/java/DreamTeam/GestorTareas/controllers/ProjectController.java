@@ -32,7 +32,7 @@ public class ProjectController {
     @Autowired
     private ProjectRepository projectRepository;
 
-    //Obtener projectos de un usuario
+    //Obtener proyectos de un usuario
     @GetMapping("/user/{idUser}")
     public ResponseEntity<?> getProjectsByUser(@PathVariable Long idUser){
         //validar que exista un usuario
@@ -46,37 +46,42 @@ public class ProjectController {
                     .toList();
 
             return ResponseEntity.ok(projects);
-        }else{
+        } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
         }
     }
 
-    //Agregar pprojecto mas relacion con usuario
+    //Agregar proyecto mas relacion con usuario
     @PostMapping("/add")
     public ResponseEntity<?> saveNewProjec(@RequestBody ProjectAndUserDto projectAndUserDto){
         //validar que exista un usuario
         if (usersRepository.findById(projectAndUserDto.getIdUser()).isPresent()){
-            //Crear el nuevo proyecto
-            ProjectEntity newProject = new ProjectEntity();
-            newProject.setName(projectAndUserDto.getName());
-            newProject.setDescription(projectAndUserDto.getDescription());
-            ProjectEntity savedProject = projectRepository.save(newProject);
+            try{
+                //Crear el nuevo proyecto
+                ProjectEntity newProject = new ProjectEntity();
+                newProject.setName(projectAndUserDto.getName());
+                newProject.setDescription(projectAndUserDto.getDescription());
+                ProjectEntity savedProject = projectRepository.save(newProject);
 
-            //Asociar usuario al proyecto
-            Optional<UserEntity> user = usersRepository.findById(projectAndUserDto.getIdUser());
+                //Asociar usuario al proyecto
+                Optional<UserEntity> user = usersRepository.findById(projectAndUserDto.getIdUser());
 
-            UserByProjectEntity newUserByProject = new UserByProjectEntity();
-            newUserByProject.setProject(savedProject);
-            newUserByProject.setUser(user.get());
-            userByProjectRepository.save(newUserByProject);
+                UserByProjectEntity newUserByProject = new UserByProjectEntity();
+                newUserByProject.setProject(savedProject);
+                newUserByProject.setUser(user.get());
+                userByProjectRepository.save(newUserByProject);
 
-            return ResponseEntity.ok(savedProject);
-        }else {
+                return ResponseEntity.ok(savedProject);
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+            }
+
+        } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
         }
     }
 
-    //Obtener projecto por id
+    //Obtener proyecto por id
     @GetMapping("/{id}")
     public ResponseEntity<?> getProject(@PathVariable Long id){
         //Buscar el proyecto
@@ -88,7 +93,7 @@ public class ProjectController {
         }
     }
 
-    //Actualizar projecto por id
+    //Actualizar proyecto por id
     @PutMapping("/{id}")
     public ResponseEntity<?> updateProject(@PathVariable Long id, @RequestBody ProjectEntity updatedProject){
         //Buscar el proyecto
@@ -97,18 +102,22 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Proyecto no encontrado");
         }
 
-        ProjectEntity project = projectOpt.get();
-        project.setName(updatedProject.getName() != null
-                ? updatedProject.getName()
-                : project.getName()
-        );
-        project.setDescription(updatedProject.getDescription() != null
-                ? updatedProject.getDescription()
-                : project.getDescription()
-        );
+        try{
+            ProjectEntity project = projectOpt.get();
+            project.setName(updatedProject.getName() != null
+                    ? updatedProject.getName()
+                    : project.getName()
+            );
+            project.setDescription(updatedProject.getDescription() != null
+                    ? updatedProject.getDescription()
+                    : project.getDescription()
+            );
 
-        projectRepository.save(project);
-        return ResponseEntity.ok(project);
+            projectRepository.save(project);
+            return ResponseEntity.ok(project);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
     }
 
     //Borrar un proyecto mas relacion con usuarios
@@ -120,17 +129,21 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Proyecto no encontrado");
         }
 
-        //Borrar relacion con usuarios
-        List<UserByProjectEntity> relations = userByProjectRepository.findByProjectId(id);
-        userByProjectRepository.deleteAll(relations);
+        try{
+            //Borrar relacion con usuarios
+            List<UserByProjectEntity> relations = userByProjectRepository.findByProjectId(id);
+            userByProjectRepository.deleteAll(relations);
 
-        //Borrar proyecto
-        projectRepository.deleteById(id);
+            //Borrar proyecto
+            projectRepository.deleteById(id);
 
-        return ResponseEntity.ok("Borrado exitoso");
+            return ResponseEntity.ok("Borrado exitoso");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
     }
 
-    //Obtener projecto mas info de usuarios
+    //Obtener proyecto mas info de usuarios
     @GetMapping("/{id}/with-users")
     public ResponseEntity<?> getProjectWithUsers(@PathVariable Long id){
         Optional<ProjectEntity> projectOpt = projectRepository.findById(id);
@@ -138,18 +151,22 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Proyecto no encontrado");
         }
 
-        ProjectEntity project = projectOpt.get();
+        try{
+            ProjectEntity project = projectOpt.get();
 
-        List<UserSimpleDto> users = userByProjectRepository.findUsersByProjectId(id);
+            List<UserSimpleDto> users = userByProjectRepository.findUsersByProjectId(id);
 
-        ProjectWithUsersDto projectWithUsers = new ProjectWithUsersDto(
-                project.getId(),
-                project.getName(),
-                project.getDescription(),
-                users
-        );
+            ProjectWithUsersDto projectWithUsers = new ProjectWithUsersDto(
+                    project.getId(),
+                    project.getName(),
+                    project.getDescription(),
+                    users
+            );
 
-        return ResponseEntity.ok(projectWithUsers);
+            return ResponseEntity.ok(projectWithUsers);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
     }
 
 }

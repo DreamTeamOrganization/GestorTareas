@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "task_statuses_by_project")
-public class TaskStatuByProjectEntity {
+public class TaskStatusByProjectEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -20,8 +20,8 @@ public class TaskEntity {
     private ProjectEntity project;
 
     @ManyToOne
-    @JoinColumn(name = "id_task")
-    private TaskEntity task;
+    @JoinColumn(name = "id_parent_task")
+    private TaskEntity parentTask;
 
     @ManyToOne
     @JoinColumn(name = "id_task_status", nullable = false)
@@ -40,7 +40,7 @@ public class TaskEntity {
     @JoinColumn(name = "id_user", nullable = false)
     private UserEntity user;
 
-    private int priority;
+    private Integer priority;
 
     private LocalDate startDate;
 
