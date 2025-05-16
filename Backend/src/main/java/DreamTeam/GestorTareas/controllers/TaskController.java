@@ -27,8 +27,13 @@ public class TaskController {
 
     //crear tarea
     @PostMapping("/add")
-    public ResponseEntity<?> addTask(){
-        return null;
+    public ResponseEntity<?> addTask(@RequestBody TaskEntity task){
+        try{
+            taskRepository.save(task);
+            return ResponseEntity.ok("Tarea creada con exito");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }
     }
 
     //obtener tarea por id
