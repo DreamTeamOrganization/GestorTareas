@@ -89,7 +89,7 @@ public class ProjectController {
         if (projectOpt.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Proyecto no encontrado");
         } else {
-            return ResponseEntity.ok(projectOpt);
+            return ResponseEntity.ok(projectOpt.get());
         }
     }
 
