@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
+import General from './General';
+import List from './List';
 
 const ProjectDetails = () => {
   const [projectData, setProjectData] = useState(null);
@@ -346,76 +348,17 @@ const ProjectDetails = () => {
           </div>
 
           {activeSection === 'general' && (
-            <>
-              <h2>{projectData?.name || 'Proyecto'}</h2>
-              <p>{projectData?.description || ''}</p>
-
-              <h4>Miembros del proyecto</h4>
-              {!Array.isArray(members) || members.length === 0 ? (
-                <p>No hay miembros en este proyecto.</p>
-              ) : (
-                <>
-                  {members.map((member) => (
-                    <p key={member.id}>{member.username}</p>
-                  ))}
-                </>
-              )}
-            </>
+            <General projectData={projectData} members={members} />
           )}
 
           {activeSection === 'lista' && (
-            <div>
-              <h3>Lista de Tareas</h3>
-              <button className="btn btn-primary mb-3" onClick={() => openTaskModal()}>
-                + Crear Tarea
-              </button>
-              {!Array.isArray(tasks) || tasks.length === 0 ? (
-                <p>No hay tareas en este proyecto.</p>
-              ) : (
-                <table className="table table-striped">
-                  <thead>
-                    <tr>
-                      <th>Orden</th>
-                      <th>ID Proyecto</th>
-                      <th>Estado</th>
-                      <th>Título</th>
-                      <th>Tipo de Tarea</th>
-                      <th>Descripción</th>
-                      <th>Usuario</th>
-                      <th>Prioridad</th>
-                      <th>Fecha Inicio</th>
-                      <th>Fecha Fin</th>
-                      <th>Estado Task</th>
-                      <th>Acciones</th>
-                    </tr>
-                  </thead>
-                  {/*<tbody>
-                    {tasks.map((task, index) => (
-                      <tr
-                        key={task.id}
-                        style={task.id === highlightedTaskId ? { backgroundColor: '#d1e7dd' } : {}}
-                      >
-                        <td>{index + 1}</td>
-                        <td>{task.project}</td>
-                        <td>{task.taskStatus}</td>
-                        <td>{task.title}</td>
-                        <td>{task.taskType}</td>
-                        <td>{task.description}</td>
-                        <td>{task.user}</td>
-                        <td>{task.priority}</td>
-                        <td>{task.startDate}</td>
-                        <td>{task.endDate}</td>
-                        <td>{task.taskStatus}</td>
-                        <td>
-                          <button className="btn btn-sm btn-warning me-2" onClick={() => openTaskModal(task)}>Editar</button>
-                          <button className="btn btn-sm btn-danger" onClick={() => deleteTask(task.id)}>Eliminar</button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>*/}
-                </table>
-              )}
-            </div>
+            <List
+              tasks={tasks}
+              members={members}
+              openTaskModal={openTaskModal}
+              deleteTask={deleteTask}
+              highlightedTaskId={highlightedTaskId}
+            />
           )}
 
           {showTaskModal && (
