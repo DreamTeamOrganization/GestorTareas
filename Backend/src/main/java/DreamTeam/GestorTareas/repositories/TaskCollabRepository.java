@@ -11,9 +11,9 @@ import java.util.List;
 public interface TaskCollabRepository extends JpaRepository<TaskCollabEntity, Long> {
     List<TaskCollabEntity> findByTaskId (Long idTask);
 
-    @Query("SELECT NEW DreamTeam.GestorTareas.dtos.UserSimpleDto (u.id, u.username)" +
-            "FROM TaskCollabEntity tc" +
-            "JOIN tc.user u" +
-            "WHERE tc.Task.id = :idTask")
+    @Query("SELECT new DreamTeam.GestorTareas.dtos.UserSimpleDto(u.id, u.username) " +
+            "FROM TaskCollabEntity tce " +
+            "JOIN tce.user u " +
+            "WHERE tce.task.id = :idTask")
     List<UserSimpleDto> findUsersByTaskId (@Param("idTask") Long idTask);
 }

@@ -10,9 +10,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface TaskStatusByProjectRepository extends JpaRepository<TaskStatusByProjectEntity, Long> {
-    @Query("SELECT NEW DreamTeam.GestorTareas.dtos.TaskStatusSimpleDto (s.id, s.name)" +
-            "FROM TaskStatusByProjectEntity tsp" +
-            "JOIN tsp.status s" +
+    @Query("SELECT new DreamTeam.GestorTareas.dtos.TaskStatusSimpleDto(s.id, s.name) " +
+            "FROM TaskStatusByProjectEntity tsp " +
+            "JOIN tsp.status s " +
             "WHERE tsp.project.id = :idProject")
     List<TaskStatusEntity> findTaskStatusByIdProject(@Param("idProject") Long idProject);
 }
