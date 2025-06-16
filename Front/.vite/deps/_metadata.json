@@ -1,0 +1,25 @@
+{
+  "hash": "81a8372d",
+  "configHash": "c5dd5cd0",
+  "lockfileHash": "490da6d1",
+  "browserHash": "c1aca785",
+  "optimized": {
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "bfbe0647",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "8807bab7",
+      "needsInterop": true
+    }
+  },
+  "chunks": {
+    "chunk-Y455YYDO": {
+      "file": "chunk-Y455YYDO.js"
+    }
+  }
+}
