@@ -88,7 +88,7 @@ const ProjectDetails = () => {
           taskType: taskToEdit.taskType,
           title: taskToEdit.title,
           description: taskToEdit.description,
-          user: idUser,
+          user: taskToEdit.user,
           priority: taskToEdit.priority,
           startDate: taskToEdit.startDate,
           endDate: taskToEdit.endDate,
@@ -118,7 +118,7 @@ const ProjectDetails = () => {
   };
 
   //Obtener la tarea que se acaba de crear con idTask
-  const getTaskById = async (idTask) => {
+ const getTaskById = async (idTask) => {
     try {
       const response = await fetch(`http://localhost:8080/api/tasks/${idTask}`, {
         method: 'GET',
@@ -152,7 +152,7 @@ const ProjectDetails = () => {
   };
 
   //Obtener los tasks que tiene un proyecto
-  const fetchTasks = async () => {
+ const fetchTasks = async () => {
     try {
       const response = await fetch(`http://localhost:8080/api/tasks/project/${idProyecto}`, {
         method: 'GET',
@@ -406,7 +406,7 @@ const ProjectDetails = () => {
                         >
                           <option value="">Seleccione un usuario</option>
                           {members.map((member) => (
-                            <option key={member.id} value={member.username}>{member.username}</option>
+                          <option key={member.id} value={member.id}>{member.username}</option>
                           ))}
                         </select>
                       </div>
