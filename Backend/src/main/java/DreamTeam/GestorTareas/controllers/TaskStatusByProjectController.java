@@ -1,5 +1,6 @@
 package DreamTeam.GestorTareas.controllers;
 
+import DreamTeam.GestorTareas.dtos.TaskStatusSimpleDto;
 import DreamTeam.GestorTareas.entities.TaskStatusByProjectEntity;
 import DreamTeam.GestorTareas.entities.TaskStatusEntity;
 import DreamTeam.GestorTareas.repositories.ProjectRepository;
@@ -29,7 +30,7 @@ public class TaskStatusByProjectController {
         };
 
         try{
-            List<TaskStatusEntity> taskStatus = taskStatusByProjectRepository.findTaskStatusByIdProject(idProject);
+            List<TaskStatusSimpleDto> taskStatus = taskStatusByProjectRepository.findTaskStatusByIdProject(idProject);
             return ResponseEntity.ok(taskStatus);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);

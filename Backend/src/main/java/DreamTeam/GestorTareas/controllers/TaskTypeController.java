@@ -30,7 +30,7 @@ public class TaskTypeController {
         }
     }
 
-    @GetMapping("/gatAll")
+    @GetMapping("/getAll")
     public ResponseEntity<?> getTaskType (){
         try{
             List<TaskTypeEntity> listTaskTypes = taskTypeRepository.findAll();

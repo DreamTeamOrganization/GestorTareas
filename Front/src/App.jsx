@@ -3,6 +3,8 @@ import Home from './paginas/Home';
 import Ingreso from './paginas/Ingreso';
 import './App.css';
 import ProjectDetails from './paginas/ProjectDetails';
+//devextreme
+import 'devextreme/dist/css/dx.light.css';
 
 function App() {
   return (

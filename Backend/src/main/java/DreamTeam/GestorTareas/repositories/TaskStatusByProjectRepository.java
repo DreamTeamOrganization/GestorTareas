@@ -1,7 +1,7 @@
 package DreamTeam.GestorTareas.repositories;
 
+import DreamTeam.GestorTareas.dtos.TaskStatusSimpleDto;
 import DreamTeam.GestorTareas.entities.TaskStatusByProjectEntity;
-import DreamTeam.GestorTareas.entities.TaskStatusEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,5 +14,5 @@ public interface TaskStatusByProjectRepository extends JpaRepository<TaskStatusB
             "FROM TaskStatusByProjectEntity tsp " +
             "JOIN tsp.status s " +
             "WHERE tsp.project.id = :idProject")
-    List<TaskStatusEntity> findTaskStatusByIdProject(@Param("idProject") Long idProject);
+    List<TaskStatusSimpleDto> findTaskStatusByIdProject(@Param("idProject") Long idProject);
 }

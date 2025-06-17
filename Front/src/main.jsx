@@ -5,6 +5,8 @@ import App from './App.jsx'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { BrowserRouter } from 'react-router-dom'
 
+//devextreme
+import 'devextreme/dist/css/dx.light.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -13,5 +15,3 @@ createRoot(document.getElementById('root')).render(
     </BrowserRouter>
   </StrictMode>,
 )
-
-

@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import General from './General';
 import List from './List';
+import Kanban from './Kanban';
 
 const ProjectDetails = () => {
   const [projectData, setProjectData] = useState(null);
@@ -334,6 +335,15 @@ const ProjectDetails = () => {
                     lista
                   </button>
                 </li>
+
+                <li>
+                  <button
+                    className={`btn btn-link text-start w-100 ${activeSection === 'kanban' ? 'fw-bold' : ''}`}
+                    onClick={() => setActiveSection('kanban')}
+                  >
+                    kanban
+                  </button>
+                </li>
               </ul>
             )}
           </div>
@@ -359,6 +369,10 @@ const ProjectDetails = () => {
               deleteTask={deleteTask}
               highlightedTaskId={highlightedTaskId}
             />
+          )}
+
+          {activeSection === 'kanban' && (
+            <Kanban/>
           )}
 
           {showTaskModal && (
