@@ -1,9 +1,8 @@
 package DreamTeam.GestorTareas.controllers;
 
+import DreamTeam.GestorTareas.dtos.TaskSimpleDto;
 import DreamTeam.GestorTareas.entities.*;
-import DreamTeam.GestorTareas.repositories.ProjectRepository;
-import DreamTeam.GestorTareas.repositories.TaskCollabRepository;
-import DreamTeam.GestorTareas.repositories.TaskRepository;
+import DreamTeam.GestorTareas.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +24,49 @@ public class TaskController {
     @Autowired
     ProjectRepository projectRepository;
 
+    @Autowired
+    TaskStatusRepository taskStatusRepository;
+
+    @Autowired
+    TaskTypeRepository taskTypeRepository;
+
+    @Autowired
+    UsersRepository usersRepository;
+
     //crear tarea
     @PostMapping("/add")
-    public ResponseEntity<?> addTask(@RequestBody TaskEntity task){
+    public ResponseEntity<?> addTask(@RequestBody TaskSimpleDto taskSimple){
+        //corroborar informacion
+        ProjectEntity project = projectRepository.findById(taskSimple.getProject())
+                .orElseThrow(() -> new RuntimeException("Projecto no encontrado"));
+
+        if (taskSimple.getParentTask() != null){
+            TaskEntity parentTask = taskRepository.findById(taskSimple.getParentTask())
+                    .orElseThrow(() -> new RuntimeException("Parent task no encontrada"));
+        };
+
+        TaskStatusEntity taskStatus = taskStatusRepository.findById(taskSimple.getTaskStatus())
+                .orElseThrow(() -> new RuntimeException("Task status no encontrado"));
+
+        TaskTypeEntity taskType = taskTypeRepository.findById(taskSimple.getTaskType())
+                .orElseThrow(() -> new RuntimeException("Task type no encontrado"));
+
+        UserEntity user = usersRepository.findById(taskSimple.getUser())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        TaskEntity task = new TaskEntity();
+
+        task.setProject(project);
+        task.setUser(user);
+        task.setTaskStatus(taskStatus);
+        task.setTaskType(taskType);
+        task.setParentTask(parent);
+        task.setTitle(taskDto.getTitle());
+        task.setDescription(taskDto.getDescription());
+        task.setPriority(taskDto.getPriority());
+        task.setStartDate(taskDto.getStartDate());
+        task.setEndDate(taskDto.getEndDate());
+
         try{
             taskRepository.save(task);
             return ResponseEntity.ok("Tarea creada con exito");
