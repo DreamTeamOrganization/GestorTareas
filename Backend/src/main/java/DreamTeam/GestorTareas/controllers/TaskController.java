@@ -36,6 +36,9 @@ public class TaskController {
     //crear tarea
     @PostMapping("/add")
     public ResponseEntity<?> addTask(@RequestBody TaskSimpleDto taskSimple){
+
+        TaskEntity task = new TaskEntity();
+
         //corroborar informacion
         ProjectEntity project = projectRepository.findById(taskSimple.getProject())
                 .orElseThrow(() -> new RuntimeException("Projecto no encontrado"));
@@ -43,6 +46,8 @@ public class TaskController {
         if (taskSimple.getParentTask() != null){
             TaskEntity parentTask = taskRepository.findById(taskSimple.getParentTask())
                     .orElseThrow(() -> new RuntimeException("Parent task no encontrada"));
+
+            task.setParentTask(parentTask);
         };
 
         TaskStatusEntity taskStatus = taskStatusRepository.findById(taskSimple.getTaskStatus())
@@ -54,18 +59,15 @@ public class TaskController {
         UserEntity user = usersRepository.findById(taskSimple.getUser())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        TaskEntity task = new TaskEntity();
-
         task.setProject(project);
         task.setUser(user);
         task.setTaskStatus(taskStatus);
         task.setTaskType(taskType);
-        task.setParentTask(parent);
-        task.setTitle(taskDto.getTitle());
-        task.setDescription(taskDto.getDescription());
-        task.setPriority(taskDto.getPriority());
-        task.setStartDate(taskDto.getStartDate());
-        task.setEndDate(taskDto.getEndDate());
+        task.setTitle(taskSimple.getTitle());
+        task.setDescription(taskSimple.getDescription());
+        task.setPriority(taskSimple.getPriority());
+        task.setStartDate(taskSimple.getStartDate());
+        task.setEndDate(taskSimple.getEndDate());
 
         try{
             taskRepository.save(task);
