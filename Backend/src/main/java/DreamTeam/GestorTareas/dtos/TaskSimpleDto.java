@@ -9,7 +9,6 @@ import java.time.LocalDate;
 @Setter
 public class TaskSimpleDto {
 
-    private Long id;
     private Long project;
     private Long parentTask;
     private Long taskStatus;
@@ -21,8 +20,7 @@ public class TaskSimpleDto {
     private LocalDate startDate;
     private LocalDate endDate;
 
-    public TaskSimpleDto(long id, long project, long parentTask, long taskStatus, long taskType, String title, String description, long user, Integer priority, LocalDate startDate, LocalDate endDate) {
-        this.id = id;
+    public TaskSimpleDto(Long project, Long parentTask, Long taskStatus, Long taskType, String title, String description, Long user, Integer priority, LocalDate startDate, LocalDate endDate) {
         this.project = project;
         this.parentTask = parentTask;
         this.taskStatus = taskStatus;
