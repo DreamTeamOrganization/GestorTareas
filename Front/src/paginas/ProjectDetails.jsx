@@ -19,8 +19,8 @@ const ProjectDetails = () => {
     taskType: '',
     title: '',
     description: '',
-    user: null,
-    priority: '',
+    user: 0,
+    priority: 0,
     startDate: '',
     endDate: '',
     taskStatus: '',
@@ -105,13 +105,8 @@ const ProjectDetails = () => {
       }
 
       const data = await response.json();
-      const idTask = data.id; // Obtener el id de la tarea creada
       alert('Tarea creada exitosamente');
-      if (idTask) {
-        setHighlightedTaskId(idTask);
-        // Ver la tarea que se acaba de crear con idTask
-        await getTaskById(idTask);
-      }
+      closeTaskModal();
       fetchTasks();
     } catch (error) {
       alert(error.message);
@@ -119,7 +114,7 @@ const ProjectDetails = () => {
   };
 
   //Obtener la tarea que se acaba de crear con idTask
- const getTaskById = async (idTask) => {
+  const getTaskById = async (idTask) => {
     try {
       const response = await fetch(`http://localhost:8080/api/tasks/${idTask}`, {
         method: 'GET',
@@ -153,7 +148,7 @@ const ProjectDetails = () => {
   };
 
   //Obtener los tasks que tiene un proyecto
- const fetchTasks = async () => {
+  const fetchTasks = async () => {
     try {
       const response = await fetch(`http://localhost:8080/api/tasks/project/${idProyecto}`, {
         method: 'GET',
@@ -186,15 +181,15 @@ const ProjectDetails = () => {
           },
           body: JSON.stringify({
             project: idProyecto,
-            parentTask: taskToEdit.parentTask,
-            taskType: taskToEdit.taskType,
+            parentTask: taskToEdit.parentTask ? taskToEdit.parentTask.id : null,
+            taskType: taskToEdit.taskType.id,
             title: taskToEdit.title,
             description: taskToEdit.description,
             user: taskToEdit.user,
             priority: taskToEdit.priority,
             startDate: taskToEdit.startDate,
             endDate: taskToEdit.endDate,
-            taskStatus: taskToEdit.taskStatus,
+            taskStatus: taskToEdit.taskStatus.id,
           }),
         });
 
@@ -295,7 +290,10 @@ const ProjectDetails = () => {
 
   const handleTaskChange = (e) => {
     const { name, value } = e.target;
-    setTaskToEdit(prev => ({ ...prev, [name]: value }));
+    setTaskToEdit(prev => ({
+      ...prev,
+      [name]: (name === 'priority' || name === 'user') ? Number(value) : value
+    }));
   };
 
 
@@ -372,7 +370,7 @@ const ProjectDetails = () => {
           )}
 
           {activeSection === 'kanban' && (
-            <Kanban/>
+            <Kanban />
           )}
 
           {showTaskModal && (
@@ -420,7 +418,7 @@ const ProjectDetails = () => {
                         >
                           <option value="">Seleccione un usuario</option>
                           {members.map((member) => (
-                          <option key={member.id} value={member.id}>{member.username}</option>
+                            <option key={member.id} value={member.id}>{member.username}</option>
                           ))}
                         </select>
                       </div>
@@ -435,9 +433,9 @@ const ProjectDetails = () => {
                           required
                         >
                           <option value="">Seleccione prioridad</option>
-                          <option value="Baja">Baja</option>
-                          <option value="Media">Media</option>
-                          <option value="Alta">Alta</option>
+                          <option value="1">Baja</option>
+                          <option value="2">Media</option>
+                          <option value="3">Alta</option>
                         </select>
                       </div>
                       <div className="mb-3">

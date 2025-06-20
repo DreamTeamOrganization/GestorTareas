@@ -71,7 +71,7 @@ public class TaskController {
 
         try{
             taskRepository.save(task);
-            return ResponseEntity.ok("Tarea creada con exito");
+            return ResponseEntity.ok(task);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
         }
@@ -111,7 +111,7 @@ public class TaskController {
 
     //actualizar tarea
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateTask(@PathVariable Long id, @RequestBody TaskEntity updatedTask){
+    public ResponseEntity<?> updateTask(@PathVariable Long id, @RequestBody TaskSimpleDto updatedTask){
 
         Optional<TaskEntity> taskOpt = taskRepository.findById(id);
 
@@ -121,29 +121,29 @@ public class TaskController {
 
         TaskEntity task = taskOpt.get();
 
-        task.setProject(
-                updatedTask.getProject() != null
-                ? updatedTask.getProject()
-                : task.getProject()
-        );
+        if (updatedTask.getProject() != null) {
+            ProjectEntity project = projectRepository.findById(updatedTask.getProject())
+                    .orElseThrow(() -> new RuntimeException("Proyecto no encontrado"));
+            task.setProject(project);
+        }
 
-        task.setParentTask(
-                updatedTask.getParentTask() != null
-                ? updatedTask.getParentTask()
-                : task.getParentTask()
-        );
+        if (updatedTask.getParentTask() != null){
+            TaskEntity parentTask = taskRepository.findById(updatedTask.getParentTask())
+                    .orElseThrow(()-> new RuntimeException("Parent task no encontrado"));
+            task.setParentTask(parentTask);
+        }
 
-        task.setTaskStatus(
-                updatedTask.getTaskStatus() != null
-                ? updatedTask.getTaskStatus()
-                : task.getTaskStatus()
-        );
+        if (updatedTask.getTaskStatus() != null){
+            TaskStatusEntity taskStatus = taskStatusRepository.findById(updatedTask.getTaskStatus())
+                    .orElseThrow(()->new RuntimeException("Task status no encontrado"));
+            task.setTaskStatus(taskStatus);
+        }
 
-        task.setTaskType(
-                updatedTask.getTaskType() != null
-                ? updatedTask.getTaskType()
-                : task.getTaskType()
-        );
+        if (updatedTask.getTaskType() != null){
+            TaskTypeEntity taskType = taskTypeRepository.findById(updatedTask.getTaskType())
+                    .orElseThrow(()->new RuntimeException("Task type no encontrado"));
+            task.setTaskType(taskType);
+        }
 
         task.setTitle(
                 updatedTask.getTitle() != null
@@ -157,11 +157,11 @@ public class TaskController {
                 : task.getDescription()
         );
 
-        task.setUser(
-                updatedTask.getUser() != null
-                ? updatedTask.getUser()
-                : task.getUser()
-        );
+        if (updatedTask.getUser() != null){
+            UserEntity user = usersRepository.findById(updatedTask.getUser())
+                    .orElseThrow(() -> new RuntimeException("User no encontrado"));
+            task.setUser(user);
+        }
 
         task.setPriority(
                 updatedTask.getPriority() != null
