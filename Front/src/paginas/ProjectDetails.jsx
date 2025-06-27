@@ -4,6 +4,8 @@ import Navbar from './Navbar';
 import General from './General';
 import List from './List';
 import Kanban from './Kanban';
+import UtilTaskStatusByProject from '../utils/taskStatusByProject.js';
+
 
 const ProjectDetails = () => {
   const [projectData, setProjectData] = useState(null);
@@ -27,12 +29,21 @@ const ProjectDetails = () => {
   });
   const [highlightedTaskId, setHighlightedTaskId] = useState(null);
 
+  //states de info de actividades
+  const utilsTaskStatusByProject = new UtilTaskStatusByProject();
+  const [taskStatusByProject, setTaskStatusByProject] = useState([]);
+
   const storeToken = localStorage.getItem('token');
   const storeUsername = localStorage.getItem('username');
 
   const location = useLocation();
   const navigate = useNavigate();
   const idProyecto = location.state?.idProyecto;
+
+  //Datos de task status por proyecto
+  const fetchTaskStatusByProject = async () => {
+    setTaskStatusByProject(await utilsTaskStatusByProject.getTaksStatusByProject(idProyecto));
+  }
 
   //Obtener datos del proyecto
   const fetchProjectData = async () => {
@@ -243,6 +254,7 @@ const ProjectDetails = () => {
     fetchProjectData();
     fetchMembers();
     fetchTasks();
+    fetchTaskStatusByProject();
   }, [idProyecto, navigate, storeToken]);
 
   const onBack = () => {
@@ -370,7 +382,10 @@ const ProjectDetails = () => {
           )}
 
           {activeSection === 'kanban' && (
-            <Kanban />
+            <Kanban 
+              tasks={tasks}
+              taskStatus={taskStatusByProject}
+            />
           )}
 
           {showTaskModal && (

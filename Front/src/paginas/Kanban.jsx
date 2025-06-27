@@ -1,27 +1,44 @@
 import React, { useCallback, useState } from 'react';
 import ScrollView from 'devextreme-react/scroll-view';
 import Sortable from 'devextreme-react/sortable';
-import { tasks as taskList, employees } from './data.js';
+import { employees } from './data.js';
 
 import '../kanban.css';
 
-import UtilsTask from '../utils/tasks.js';
-const utilsTask = new UtilsTask();
-console.log(await utilsTask.getTaksByProject(1));
-import UtilTaskStatusByProject from '../utils/taskStatusByProject.js';
-const utilsTaskStatusByProject = new UtilTaskStatusByProject();
-console.log(await utilsTaskStatusByProject.getTaksStatusByProject(1));
+function simplifyTask(objectTasks){
+    const simplifiedTask = (objectTasks || []).map( task =>{
+        return {
+            id : task.id,
+            title : task.title,
+            description : task.description,
+            taskType : task.taskType.name,
+            taskStatus: task.taskStatus.name,
+            user : task.user.id,
+            priority: task.priority
+        };
+    } );
+    return simplifiedTask;
+}
+
+function simplifyTaskStatus(objectStatuses){
+    const simplifiedStatuses = (objectStatuses || []).map( taskStatus => {
+        return {
+            name : taskStatus.name
+        };
+    } );
+    return simplifiedStatuses;
+}
 
 function getLists(statusArray, taskArray) {
     const tasksMap = taskArray.reduce((result, task) => {
-        if (result[task.Task_Status]) {
-            result[task.Task_Status].push(task);
+        if (result[task.taskStatus]) {
+            result[task.taskStatus].push(task);
         } else {
-            result[task.Task_Status] = [task];
+            result[task.taskStatus] = [task];
         }
         return result;
     }, {});
-    return statusArray.map((status) => tasksMap[status]);
+    return statusArray.map((status) => tasksMap[status.name]);
 }
 function getEmployeesMap(employeesArray) {
     return employeesArray.reduce((result, employee) => {
@@ -42,13 +59,19 @@ function reorderItem(array, fromIdx, toIdx) {
     const result = removeItem(array, fromIdx);
     return insertItem(result, item, toIdx);
 }
-const taskStatuses = ['Not Started', 'Need Assistance', 'In Progress', 'Deferred', 'Completed'];
+
 const employeesRecord = getEmployeesMap(employees);
 const Card = ({ task, employeesMap }) => (
     <div className="card dx-card">
-        <div className={`card-priority priority-${task.Task_Priority}`}></div>
-        <div className="card-subject">{task.Task_Subject}</div>
-        <div className="card-assignee">{employeesMap[task.Task_Assigned_Employee_ID]}</div>
+        <div className={`card-priority priority-${task.priority}`}></div>
+        <div className="card-subject">{task.title}</div>
+        <div className='card-info'>
+            <a>Descripción:</a> {task.description}<br></br>
+            <a>Tipo:</a> {task.taskType}
+        </div>
+        <div className="card-assignee">
+            <a>Encargado:</a> {employeesMap[task.user]}
+        </div>
     </div>
 );
 const List = ({
@@ -65,12 +88,12 @@ const List = ({
                 className="sortable-cards"
                 group="cardsGroup"
                 data={index}
-                onReorder={onTaskDrop}
-                onAdd={onTaskDrop}
+                /*onReorder={onTaskDrop}
+                onAdd={onTaskDrop}*/
             >
-                {tasks.map((task) => (
+                {(tasks || []).map((task) => (
                     <Card
-                        key={task.Task_ID}
+                        key={task.id}
                         task={task}
                         employeesMap={employeesMap}
                     ></Card>
@@ -79,13 +102,18 @@ const List = ({
         </ScrollView>
     </div>
 );
-function Kanban() {
+function Kanban( props ) {
+
+    const taskStatuses = simplifyTaskStatus(props.taskStatus);
+    const taskList = simplifyTask(props.tasks);
+
     const [statuses, setStatuses] = useState(taskStatuses);
     const [lists, setLists] = useState(getLists(taskStatuses, taskList));
     const onListReorder = useCallback(({ fromIndex, toIndex }) => {
         setLists((state) => reorderItem(state, fromIndex, toIndex));
         setStatuses((state) => reorderItem(state, fromIndex, toIndex));
     }, []);
+    /*
     const onTaskDrop = useCallback(
         ({
             fromData, toData, fromIndex, toIndex,
@@ -97,7 +125,8 @@ function Kanban() {
             setLists(updatedLists);
         },
         [lists],
-    );
+    );*/
+
     return (
         <div id="kanban">
             <ScrollView
@@ -115,12 +144,12 @@ function Kanban() {
                         const status = statuses[listIndex];
                         return (
                             <List
-                                key={status}
-                                title={status}
+                                key={status.name}
+                                title={status.name}
                                 index={listIndex}
                                 tasks={tasks}
                                 employeesMap={employeesRecord}
-                                onTaskDrop={onTaskDrop}
+                                /*onTaskDrop={onTaskDrop}*/
                             ></List>
                         );
                     })}
