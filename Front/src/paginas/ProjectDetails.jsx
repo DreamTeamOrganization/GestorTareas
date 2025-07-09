@@ -78,7 +78,9 @@ const ProjectDetails = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        setMembers(Array.isArray(data.users) ? data.users : []);
+        const users = data.users;
+        console.log('users: ', users);
+        setMembers(Array.isArray(users) ? users : []);
       } else {
         console.error('Error al obtener los miembros');
       }
@@ -385,6 +387,7 @@ const ProjectDetails = () => {
             <Kanban 
               tasks={tasks}
               taskStatus={taskStatusByProject}
+              members={members}
             />
           )}
 

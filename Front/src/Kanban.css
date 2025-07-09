@@ -55,6 +55,8 @@
 }
 
 .card-assignee {
+    text-align: start;
+    font-size: small;
     opacity: 0.6;
 }
 

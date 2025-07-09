@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import ScrollView from 'devextreme-react/scroll-view';
 import Sortable from 'devextreme-react/sortable';
-import { employees } from './data.js';
 
 import '../kanban.css';
 
@@ -42,7 +41,7 @@ function getLists(statusArray, taskArray) {
 }
 function getEmployeesMap(employeesArray) {
     return employeesArray.reduce((result, employee) => {
-        result[employee.ID] = employee.Name;
+        result[employee.id] = employee.username;
         return result;
     }, {});
 }
@@ -60,7 +59,6 @@ function reorderItem(array, fromIdx, toIdx) {
     return insertItem(result, item, toIdx);
 }
 
-const employeesRecord = getEmployeesMap(employees);
 const Card = ({ task, employeesMap }) => (
     <div className="card dx-card">
         <div className={`card-priority priority-${task.priority}`}></div>
@@ -88,8 +86,8 @@ const List = ({
                 className="sortable-cards"
                 group="cardsGroup"
                 data={index}
-                /*onReorder={onTaskDrop}
-                onAdd={onTaskDrop}*/
+                onReorder={onTaskDrop}
+                onAdd={onTaskDrop}
             >
                 {(tasks || []).map((task) => (
                     <Card
@@ -107,13 +105,16 @@ function Kanban( props ) {
     const taskStatuses = simplifyTaskStatus(props.taskStatus);
     const taskList = simplifyTask(props.tasks);
 
+    const employeesRecord = getEmployeesMap(props.members);
+
     const [statuses, setStatuses] = useState(taskStatuses);
     const [lists, setLists] = useState(getLists(taskStatuses, taskList));
+
     const onListReorder = useCallback(({ fromIndex, toIndex }) => {
         setLists((state) => reorderItem(state, fromIndex, toIndex));
         setStatuses((state) => reorderItem(state, fromIndex, toIndex));
     }, []);
-    /*
+    
     const onTaskDrop = useCallback(
         ({
             fromData, toData, fromIndex, toIndex,
@@ -121,11 +122,21 @@ function Kanban( props ) {
             const updatedLists = [...lists];
             const item = updatedLists[fromData][fromIndex];
             updatedLists[fromData] = removeItem(updatedLists[fromData], fromIndex);
-            updatedLists[toData] = insertItem(updatedLists[toData], item, toIndex);
+
+            //Hacer el fetch para actulizar estado
+            console.log(item);
+            console.log(props.taskStatus[toData]);
+            
+            //updatedLists[toData] puede estar vacío
+            updatedLists[toData] = insertItem(
+                updatedLists[toData] ? updatedLists[toData] : [], 
+                item, 
+                toIndex);
+
             setLists(updatedLists);
         },
         [lists],
-    );*/
+    );
 
     return (
         <div id="kanban">
@@ -134,9 +145,9 @@ function Kanban( props ) {
                 direction="horizontal"
                 showScrollbar="always"
             >
-                <Sortable
+                <div
                     className="sortable-lists"
-                    itemOrientation="horizontal"
+                    /*itemOrientation="horizontal"*/
                     handle=".list-title"
                     onReorder={onListReorder}
                 >
@@ -149,11 +160,11 @@ function Kanban( props ) {
                                 index={listIndex}
                                 tasks={tasks}
                                 employeesMap={employeesRecord}
-                                /*onTaskDrop={onTaskDrop}*/
+                                onTaskDrop={onTaskDrop}
                             ></List>
                         );
                     })}
-                </Sortable>
+                </div>
             </ScrollView>
         </div>
     );
